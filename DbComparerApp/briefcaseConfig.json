@@ -1,0 +1,52 @@
+{
+  "globalSettings": {
+    "treatNullAsEmptyString": true,
+    "ignoreColumns": [ "CreateInfo", "UpdateInfo" ],
+    "ignoreCase": false,
+    "trimValues":  false
+  },
+
+  "tableSettings": [
+    {
+      "tableName": "refDensity",
+      "processTable": false,
+      "selectColumns": [ "Category", "Material", "Type" ],
+      "displayColumns": [ "DensityID", "Category", "Material", "Type", "Minimal", "Typical", "WeightUOM", "UpdateInfo" ]
+    },
+    {
+      "tableName": "refMaterial",
+      "processTable": false,
+      "selectColumns": [ "Category", "MaterialGroup", "Ordinal" ],
+      "displayColumns": [ "MaterialID", "Category", "MaterialGroup", "Material", "Ordinal", "UpdateInfo" ]
+    },
+    {
+      "tableName": "refProjectParameters",
+      "processTable": true,
+      "ignoreCase": true,
+      "trimValues": true,
+      "selectColumns": [ "Category", "Group", "Name" ],
+      "displayColumns": [ "ParameterID", "Category", "Group", "Name", "Value", "UOM", "UpdateInfo" ]
+    },
+    {
+      "tableName": "sysExpression",
+      "processTable": false,
+      "treatNullAsEmptyString": false,
+      "selectColumns": [ "Context", "Category", "ClassName", "ExpressName" ],
+      "displayColumns": [ "ExpressID", "Context", "Category", "ClassName", "ExpressName", "UpdateInfo" ]
+    },
+    {
+      "tableName": "refSuppDescript",
+      "processTable":  false,
+      "selectColumns": [ "ItemID" ],
+      "displayColumns": [ "ItemID", "Family", "SubFamily", "Manufact", "Type", "BuildMethod", "UpdateInfo" ]
+    },
+    {
+      "tableName": "refSuppGeometry",
+      "processTable": false,
+      "selectColumns": [ "Signature" ],
+      "displayColumns": [ "Signature", "NomSize", "UpdateInfo" ]
+    }
+
+
+  ]
+}
