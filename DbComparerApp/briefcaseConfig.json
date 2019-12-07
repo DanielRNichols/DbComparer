@@ -9,13 +9,13 @@
   "tableSettings": [
     {
       "tableName": "refDensity",
-      "processTable": false,
+      "processTable": true,
       "selectColumns": [ "Category", "Material", "Type" ],
       "displayColumns": [ "DensityID", "Category", "Material", "Type", "Minimal", "Typical", "WeightUOM", "UpdateInfo" ]
     },
     {
       "tableName": "refMaterial",
-      "processTable": false,
+      "processTable": true,
       "selectColumns": [ "Category", "MaterialGroup", "Ordinal" ],
       "displayColumns": [ "MaterialID", "Category", "MaterialGroup", "Material", "Ordinal", "UpdateInfo" ]
     },

@@ -17,16 +17,16 @@ namespace Bentley.OPEF.Utilities.DbCompare
     public class DbComparer
     {
         public Database.DatabaseType DbType { get; set; }
-        private ILogger Logger {get; set; }
+        private IResults Results {get; set; }
 
         public DbComparer()
         {
         }
 
-        public void CompareDbs(String dbName1, String dbName2, Settings settings, ILogger logger)
+        public void CompareDbs(String dbName1, String dbName2, Settings settings, IResults results)
         {
-            Logger = logger;
-            Logger.Clear();
+            Results = results;
+            Results.Clear();
 
             Database.IDatabase db1 = Connect(dbName1);
             if(db1 == null)
@@ -40,20 +40,20 @@ namespace Bentley.OPEF.Utilities.DbCompare
             {
                 if (!ts.ProcessTable.GetValueOrDefault(true))
                 { 
-                    Logger.Add(ts.TableName, LogMessageType.SkippedTable, $"Skipped table {ts.TableName}");
+                    Results.AddSkippedTable(ts.TableName, $"Skipped table {ts.TableName}");
                     continue;
                 }
 
-                Logger.Add(ts.TableName, LogMessageType.ProcessingTable, $"Processing table {ts.TableName}");
-                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString.GetValueOrDefault(settings.GlobalSettings.TreatNullAsEmptyString.GetValueOrDefault(false));
-                ts.IgnoreColumns = ts.IgnoreColumns == null ? settings.GlobalSettings.IgnoreColumns : ts.IgnoreColumns;
-                ts.IgnoreCase = ts.IgnoreCase == null ? settings.GlobalSettings.IgnoreCase : ts.IgnoreCase;
-                ts.TrimValues = ts.TrimValues == null ? settings.GlobalSettings.TrimValues : ts.TrimValues;
+                Results.AddProcessingTable(ts.TableName, $"Processing table {ts.TableName}");
+
+                // override null tableSettings values with values from global settings
+                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString ?? settings.GlobalSettings.TreatNullAsEmptyString;
+                ts.IgnoreColumns = ts.IgnoreColumns ?? settings.GlobalSettings.IgnoreColumns;
+                ts.IgnoreCase = ts.IgnoreCase ?? settings.GlobalSettings.IgnoreCase;
+                ts.TrimValues = ts.TrimValues ?? settings.GlobalSettings.TrimValues;
 
                 CompareTable(db1, db2, ts);
             }
-
-
 
             return;
         }
@@ -65,11 +65,16 @@ namespace Bentley.OPEF.Utilities.DbCompare
             if (dt1 == null || dt2 == null)
                 return;
 
+            int numDifferences = 0;
             foreach(DataRow row1 in dt1.Rows)
             {
-                DataRow row2 = FindMatchingRow(db2, SourceDb.Left, dt2, row1, tblSettings);
+                string whereClause = CreateWhereClause(db1, tblSettings.SelectColumns, row1);
+                DataRow row2 = FindMatchingRow(db2, SourceDb.Left, dt2, row1, whereClause, tblSettings);
                 if(row2 == null)
+                { 
+                    numDifferences++;
                     continue;
+                }
 
                 var array1 = row1.ItemArray;
                 var array2 = row2.ItemArray;
@@ -85,7 +90,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
                     if (!dt2.Columns.Contains(colName))
                     {
-                        Logger.Add(dt2.TableName, LogMessageType.Error, $"Column {col1.ColumnName} not found in {SourceDb.Right.ToString()}");
+                        Results.AddError(dt2.TableName, $"Column {col1.ColumnName} not found in {SourceDb.Right.ToString()}");
                         continue;
                     }
                     object val1 = row1[colName];
@@ -94,11 +99,12 @@ namespace Bentley.OPEF.Utilities.DbCompare
                     if (CompareValues(val1, val2, tblSettings))
                         continue;
 
+                    numDifferences++;
                     string val1Str = (val1 is DBNull) ? "Null" : $"'{val1.ToString()}'";
                     string val2Str = (val2 is DBNull) ? "Null" : $"'{val2.ToString()}'";
 
-                    Logger.Add(dt1.TableName, LogMessageType.Difference,
-                    $"{CreateLogMessage(tblSettings.SelectColumns, row1)}" +
+                    Results.AddDifference(dt1.TableName, whereClause, colName,
+                    $"{CreateMessage(tblSettings.SelectColumns, row1)}" +
                             $" - Column[{colName}]: " +
                             $"{SourceDb.Left.ToString()}={val1Str} " +
                             $"{SourceDb.Right.ToString()}={val2Str}");
@@ -106,10 +112,16 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 }
             }
 
+            // Now check for RightOnly rows
             foreach (DataRow row2 in dt2.Rows)
             {
-                DataRow row1 = FindMatchingRow(db1, SourceDb.Right, dt1, row2, tblSettings);
+                string whereClause = CreateWhereClause(db2, tblSettings.SelectColumns, row2);
+                DataRow row1 = FindMatchingRow(db1, SourceDb.Right, dt1, row2, whereClause, tblSettings);
+                if(row1 == null)
+                    numDifferences++;
             }
+            if(numDifferences == 0)
+                Results.AddNoDifferences(dt1.TableName, $"No differnces found in {dt1.TableName}");
         }
 
         private bool CompareValues(object obj1, object obj2, TableSettings tblSettings)
@@ -176,18 +188,16 @@ namespace Bentley.OPEF.Utilities.DbCompare
         }
 
 
-        private DataRow FindMatchingRow(Database.IDatabase db, SourceDb source, DataTable dt,  DataRow sourceRow, TableSettings tblSettings)
+        private DataRow FindMatchingRow(Database.IDatabase db, SourceDb source, DataTable dt,  DataRow sourceRow, string whereClause, TableSettings tblSettings)
         {
-            if(dt == null || sourceRow == null || tblSettings == null)
+            if(dt == null || sourceRow == null || String.IsNullOrEmpty(whereClause) || tblSettings == null)
                 return null;
-
-            string whereClause = CreateWhereClause(db, tblSettings.SelectColumns, sourceRow);
 
             DataRow[] results = dt.Select(whereClause);
             if (results.Count() < 1)
             {
-                Logger.Add(dt.TableName, source == SourceDb.Left ? LogMessageType.LeftOnly : LogMessageType.RightOnly,
-                           CreateLogMessage(tblSettings.DisplayColumns, sourceRow));
+                Results.AddOneSideOnly(dt.TableName, source == SourceDb.Left ? ResultTypes.LeftOnly : ResultTypes.RightOnly, whereClause,
+                           CreateMessage(tblSettings.DisplayColumns, sourceRow));
                 return null;
             }
             else if (results.Count() == 1)
@@ -196,8 +206,8 @@ namespace Bentley.OPEF.Utilities.DbCompare
             }
             else
             {
-                Logger.Add(dt.TableName, LogMessageType.MultipleMatches,
-                           CreateLogMessage(tblSettings.SelectColumns, sourceRow));
+                Results.AddMultipleMatches(dt.TableName, whereClause,
+                           CreateMessage(tblSettings.SelectColumns, sourceRow));
                 return null;
             }
 
@@ -210,7 +220,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
             if (!db.TableExists(tableName))
             {
-                Logger.Add(tableName, LogMessageType.Error, $"Table {tableName} not found in {db.ToString()}");
+                Results.AddError(tableName, $"Table {tableName} not found in {db.ToString()}");
                 return null;
             }
 
@@ -219,7 +229,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             DataTable dt = db.GetDataTable(sql);
             if(dt == null)
             {
-                Logger.Add(tableName, LogMessageType.Error, $"Unable to get table {tableName} in {db.ToString()}");
+                Results.AddError(tableName, $"Unable to get table {tableName} in {db.ToString()}");
             }
 
             return dt;
@@ -241,7 +251,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 }
                 catch
                 {
-                    Logger.Add("", LogMessageType.Error, $"Invalid Select Column specified: {selCol}");
+                    Results.AddError("", $"Invalid Select Column specified: {selCol}");
                 }
                 if(val == null)
                     continue;
@@ -259,7 +269,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return where;
         }
 
-        private string CreateLogMessage(IList<string> cols, DataRow row)
+        private string CreateMessage(IList<string> cols, DataRow row)
         {
             string msg = String.Empty;
 
@@ -272,15 +282,15 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 }
                 catch
                 {
-                    //Logger.Add("", LogMessageType.Error, $"Invalid Column specified: {col}");
+                    //Logger.Add("", LogMessageType.Error, "", $"Invalid Column specified: {col}");
                 }
                 if (val == null)
                     continue;
 
-                msg += $"{col}={val.ToString()} ";
+                msg += $"{col}='{val.ToString()}', ";
             }
 
-            return msg;
+            return msg.TrimEnd( new char[] {',',' '});
         }
 
 
@@ -288,12 +298,12 @@ namespace Bentley.OPEF.Utilities.DbCompare
         {
             if (String.IsNullOrEmpty(dbName))
             {
-                Logger.Add(dbName, LogMessageType.Error, "Invalid database name");
+                Results.AddError(dbName, "Invalid database name");
                 return null;
             }
             if (!System.IO.File.Exists(dbName))
             {
-                Logger.Add(dbName, LogMessageType.Error, $"Database not found: {dbName}");
+                Results.AddError(dbName, $"Database not found: {dbName}");
                 return null;
             }
 
@@ -301,7 +311,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
             if (db == null)
             {
-                Logger.Add(dbName, LogMessageType.Error, $"Unable to connect to database: {dbName}");
+                Results.AddError(dbName, $"Unable to connect to database: {dbName}");
             }
 
             return db;

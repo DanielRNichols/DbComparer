@@ -36,9 +36,9 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
     }
 
-    public class SettingsDeserializer
+    public class SettingsUtilities
     {
-        public static Settings DeserializeSettings(string settingsFile)
+        public static Settings Deserialize(string settingsFile)
         {
             if (String.IsNullOrEmpty(settingsFile) || !System.IO.File.Exists(settingsFile))
                 return null;
@@ -53,6 +53,24 @@ namespace Bentley.OPEF.Utilities.DbCompare
             {
                 throw new Exception(String.Format("Unable to parse json file: {0}", settingsFile), ex);
             }
+        }
+
+        public static TableSettings FindSettings(IList<TableSettings> tblSettings, string tableName)
+        {
+            if(tblSettings == null || String.IsNullOrEmpty(tableName))
+                return null;
+            
+            foreach(TableSettings ts in tblSettings)
+            {
+                if(ts.TableName == null)
+                    continue;
+
+                if(ts.TableName.Equals(tableName, StringComparison.InvariantCultureIgnoreCase))
+                    return ts;
+            }
+
+            return null;
+
         }
     }
 
