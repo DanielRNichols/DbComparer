@@ -21,16 +21,16 @@ namespace Bentley.OPEF.Utilities.DbCompare
     }
 
 
-    public class Results: IResults
+    public class Results
     {
         private DataTable ResultsTable {get; set; }
 
-        private const string IdColName = "Id";
-        private const string TableNameColName = "TableName";
-        private const string MsgTypeColName = "MsgType";
-        private const string WhereClauseColName = "WhereClause";
-        private const string DifferenceColumnColName = "DifferenceColumn";
-        private const string MsgColName = "Msg";
+        public const string IdColName = "Id";
+        public const string TableNameColName = "TableName";
+        public const string EntryTypeColName = "EntryType";
+        public const string WhereClauseColName = "WhereClause";
+        public const string DifferenceColumnColName = "DifferenceColumn";
+        public const string MsgColName = "Msg";
 
         public Results()
         {
@@ -46,7 +46,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             idCol.AutoIncrementSeed = 1;
 
             ResultsTable.Columns.Add(TableNameColName, typeof(String));
-            ResultsTable.Columns.Add(MsgTypeColName, typeof(String));
+            ResultsTable.Columns.Add(EntryTypeColName, typeof(String));
             ResultsTable.Columns.Add(WhereClauseColName, typeof(String));
             ResultsTable.Columns.Add(DifferenceColumnColName, typeof(String));
             ResultsTable.Columns.Add(MsgColName, typeof(String));
@@ -73,9 +73,9 @@ namespace Bentley.OPEF.Utilities.DbCompare
             Add(tableName, ResultTypes.Difference, whereClause, diffCol, msg);
         }
 
-        public void AddOneSideOnly(string tableName, ResultTypes msgType,string whereClause, string msg)
+        public void AddOneSideOnly(string tableName, ResultTypes entryType,string whereClause, string msg)
         {
-            Add(tableName, msgType, whereClause, "", msg);
+            Add(tableName, entryType, whereClause, "", msg);
         }
 
         public void AddLeftOnly(string tableName, string whereClause, string msg)
@@ -98,11 +98,11 @@ namespace Bentley.OPEF.Utilities.DbCompare
             Add(tableName, ResultTypes.Error, "", "", msg);
         }
 
-        private void Add(string tableName, ResultTypes msgType, string whereClause, string diffCol, string msg)
+        private void Add(string tableName, ResultTypes entryType, string whereClause, string diffCol, string msg)
         {
             DataRow row = ResultsTable.NewRow();
             row[TableNameColName] = tableName;
-            row[MsgTypeColName] = msgType.ToString();
+            row[EntryTypeColName] = entryType.ToString();
             row[WhereClauseColName] = whereClause;
             row[DifferenceColumnColName] = diffCol;
             row[MsgColName] = msg;
@@ -137,16 +137,16 @@ namespace Bentley.OPEF.Utilities.DbCompare
         {
             string id = row[IdColName].ToString();
             string tableName = row[TableNameColName].ToString();
-            string msgType = row[MsgTypeColName].ToString();
+            string entryType = row[EntryTypeColName].ToString();
             string whereClause = row[WhereClauseColName].ToString();
             string msg = row[MsgColName].ToString();
 
-            return $"{id}. [{tableName}] [{msgType.ToString()}] [{whereClause}] - {msg}";
+            return $"{id}. [{tableName}] [{entryType.ToString()}] [{whereClause}] - {msg}";
         }
 
         public DataRow[] GetDifferences(string tableName = null)
         {
-            string whereClause = $"{MsgTypeColName}='{ResultTypes.Difference.ToString()}'";
+            string whereClause = $"{EntryTypeColName}='{ResultTypes.Difference.ToString()}'";
             if(!String.IsNullOrEmpty(tableName))
                 whereClause = whereClause + $" AND {TableNameColName}='{tableName}'";
 
@@ -156,53 +156,54 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
         public IList<String> GetTablesSkipped()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.SkippedTable);
+            return GetUniqueTableNamesForType(ResultTypes.SkippedTable);
         }
 
         public IList<String> GetTablesProcessed()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.ProcessingTable);
+            return GetUniqueTableNamesForType(ResultTypes.ProcessingTable);
         }
 
         public IList<String> GetTablesWithDifferences()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.Difference);
+            return GetUniqueTableNamesForType(ResultTypes.Difference);
         }
 
         public IList<String> GetTablesWithLeftOnly()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.LeftOnly);
+            return GetUniqueTableNamesForType(ResultTypes.LeftOnly);
         }
 
         public IList<String> GetTablesWithRightOnly()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.RightOnly);
+            return GetUniqueTableNamesForType(ResultTypes.RightOnly);
         }
 
         public IList<String> GetTablesWithErrors()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.Error);
+            return GetUniqueTableNamesForType(ResultTypes.Error);
         }
 
         public IList<String> GetTablesWithMultipleMatches()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.MultipleMatches);
+            return GetUniqueTableNamesForType(ResultTypes.MultipleMatches);
         }
 
         public IList<String> GetTablesWithNoDifferences()
         {
-            return GetUniqueTableNamesForMessageType(ResultTypes.NoDifferences);
+            return GetUniqueTableNamesForType(ResultTypes.NoDifferences);
         }
 
 
-        private IList<String> GetUniqueTableNamesForMessageType(ResultTypes msgType)
+        private IList<String> GetUniqueTableNamesForType(ResultTypes entryType)
         {
             IList<String> tblNames = new List<String>();
 
+            // Use dv to get distinct values
             DataView dv = new DataView(ResultsTable);
-            DataTable dt = dv.ToTable(true, MsgTypeColName, TableNameColName);
+            DataTable dt = dv.ToTable(true, EntryTypeColName, TableNameColName);
 
-            string whereClause = $"{MsgTypeColName}='{msgType.ToString()}'";
+            string whereClause = $"{EntryTypeColName}='{entryType.ToString()}'";
             DataRow[] rows = dt.Select(whereClause);
             foreach (DataRow row in rows)
             {
@@ -211,6 +212,38 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
 
             return tblNames;
+        }
+
+        public DataRow[] GetMatchingRows(string tableName, ResultTypes entryType)
+        {
+            if(String.IsNullOrEmpty(tableName))
+                tableName = "";
+
+            string filter = $"{TableNameColName}='{tableName}' AND {EntryTypeColName}='{entryType.ToString()}'";
+            return ResultsTable.Select(filter);
+        }
+
+        public IList<String> GetWhereClausesForTableAndType(string tableName, ResultTypes entryType)
+        {
+            IList<String> whereClauses = new List<String>();
+
+            DataRow[] rows = GetMatchingRows(tableName, entryType);
+            if(rows.Count() < 1)
+                return whereClauses;
+
+            foreach(DataRow row in rows)
+            {
+                try
+                {
+                    string whereClause = row[WhereClauseColName].ToString();
+                    whereClauses.Add(whereClause);
+                }
+                catch
+                {
+                }
+            }
+
+            return whereClauses;
         }
     }
 }

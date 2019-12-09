@@ -54,9 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbComparer.cs" />
-    <Compile Include="IResults.cs" />
     <Compile Include="Results.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultsView.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>

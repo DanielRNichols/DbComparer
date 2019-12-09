@@ -16,27 +16,23 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
     public class DbComparer
     {
-        public Database.DatabaseType DbType { get; set; }
-        private IResults Results {get; set; }
+        private Settings Settings { get; set; }
+        private Results Results {get; set; }
 
         public DbComparer()
         {
         }
 
-        public void CompareDbs(String dbName1, String dbName2, Settings settings, IResults results)
+        public Results CompareDbs(IDatabase db1, IDatabase db2, Settings settings)
         {
-            Results = results;
-            Results.Clear();
+            Results = new Results();
 
-            Database.IDatabase db1 = Connect(dbName1);
-            if(db1 == null)
-                return;
+            Settings = settings;
 
-            Database.IDatabase db2 = Connect(dbName2);
-            if (db2 == null)
-                return;
+            if (db1 == null || db2 == null || Settings == null) 
+                return Results;
 
-            foreach (TableSettings ts in settings.TableSettings)
+            foreach (TableSettings ts in Settings.TableSettings)
             {
                 if (!ts.ProcessTable.GetValueOrDefault(true))
                 { 
@@ -47,21 +43,27 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 Results.AddProcessingTable(ts.TableName, $"Processing table {ts.TableName}");
 
                 // override null tableSettings values with values from global settings
-                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString ?? settings.GlobalSettings.TreatNullAsEmptyString;
-                ts.IgnoreColumns = ts.IgnoreColumns ?? settings.GlobalSettings.IgnoreColumns;
-                ts.IgnoreCase = ts.IgnoreCase ?? settings.GlobalSettings.IgnoreCase;
-                ts.TrimValues = ts.TrimValues ?? settings.GlobalSettings.TrimValues;
+                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString ?? Settings.GlobalSettings.TreatNullAsEmptyString;
+                ts.IgnoreColumns = ts.IgnoreColumns ?? Settings.GlobalSettings.IgnoreColumns;
+                ts.IgnoreCase = ts.IgnoreCase ?? Settings.GlobalSettings.IgnoreCase;
+                ts.TrimValues = ts.TrimValues ?? Settings.GlobalSettings.TrimValues;
 
                 CompareTable(db1, db2, ts);
             }
 
-            return;
+            return Results;
         }
 
         private void CompareTable(Database.IDatabase db1, Database.IDatabase db2, TableSettings tblSettings)
         {
+            if (db1 == null || db2 == null || tblSettings == null)
+                return;
+
             DataTable dt1 = GetTable(db1, tblSettings.TableName);
+
             DataTable dt2 = GetTable(db2, tblSettings.TableName);
+
+
             if (dt1 == null || dt2 == null)
                 return;
 
@@ -82,6 +84,9 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 if (array1.SequenceEqual(array2))
                     continue;
 
+                bool differencesFound = false;
+                string diffCols = "";
+                string diffMsg = "";
                 foreach (DataColumn col1 in dt1.Columns)
                 {
                     string colName = col1.ColumnName;
@@ -99,16 +104,21 @@ namespace Bentley.OPEF.Utilities.DbCompare
                     if (CompareValues(val1, val2, tblSettings))
                         continue;
 
-                    numDifferences++;
+                    differencesFound = true;
                     string val1Str = (val1 is DBNull) ? "Null" : $"'{val1.ToString()}'";
                     string val2Str = (val2 is DBNull) ? "Null" : $"'{val2.ToString()}'";
 
-                    Results.AddDifference(dt1.TableName, whereClause, colName,
-                    $"{CreateMessage(tblSettings.SelectColumns, row1)}" +
-                            $" - Column[{colName}]: " +
-                            $"{SourceDb.Left.ToString()}={val1Str} " +
-                            $"{SourceDb.Right.ToString()}={val2Str}");
+                    diffMsg = $"{diffMsg}[{colName}]: {val1Str} => {val2Str}; ";
 
+                    diffCols = $"{diffCols}{colName};";
+
+
+                }
+
+                if(differencesFound)
+                {
+                    numDifferences++;
+                    Results.AddDifference(dt1.TableName, whereClause, diffCols.TrimEnd(new char[] { ' ', ';' }), diffMsg.TrimEnd(new char[] {' ', ';'}));
                 }
             }
 
@@ -293,29 +303,6 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return msg.TrimEnd( new char[] {',',' '});
         }
 
-
-        private Database.IDatabase Connect(string dbName)
-        {
-            if (String.IsNullOrEmpty(dbName))
-            {
-                Results.AddError(dbName, "Invalid database name");
-                return null;
-            }
-            if (!System.IO.File.Exists(dbName))
-            {
-                Results.AddError(dbName, $"Database not found: {dbName}");
-                return null;
-            }
-
-            Database.IDatabase db = Database.DatabaseFactory.CreateDatabase(DbType, dbName);
-
-            if (db == null)
-            {
-                Results.AddError(dbName, $"Unable to connect to database: {dbName}");
-            }
-
-            return db;
-        }
 
 
     }
