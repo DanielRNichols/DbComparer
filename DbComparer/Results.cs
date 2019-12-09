@@ -166,6 +166,11 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
         public IList<String> GetTablesWithDifferences()
         {
+            return GetUniqueTableNamesForType(ResultTypes.Difference, ResultTypes.LeftOnly, ResultTypes.RightOnly);
+        }
+
+        public IList<String> GetTablesWithRowDifferences()
+        {
             return GetUniqueTableNamesForType(ResultTypes.Difference);
         }
 
@@ -195,7 +200,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
         }
 
 
-        private IList<String> GetUniqueTableNamesForType(ResultTypes entryType)
+        private IList<String> GetUniqueTableNamesForType(params ResultTypes[] entryTypes)
         {
             IList<String> tblNames = new List<String>();
 
@@ -203,11 +208,20 @@ namespace Bentley.OPEF.Utilities.DbCompare
             DataView dv = new DataView(ResultsTable);
             DataTable dt = dv.ToTable(true, EntryTypeColName, TableNameColName);
 
-            string whereClause = $"{EntryTypeColName}='{entryType.ToString()}'";
+            string whereClause = null;
+            foreach (ResultTypes entryType in entryTypes)
+            { 
+                if(String.IsNullOrEmpty(whereClause))
+                    whereClause = $"{EntryTypeColName}='{entryType.ToString()}'";
+                else
+                    whereClause = $"{whereClause} OR {EntryTypeColName}='{entryType.ToString()}'";
+            }
             DataRow[] rows = dt.Select(whereClause);
             foreach (DataRow row in rows)
             {
-                tblNames.Add(row[TableNameColName].ToString());
+                string tblName = row[TableNameColName].ToString();
+                if (!tblNames.Contains(tblName))
+                    tblNames.Add(tblName);
             }
 
 

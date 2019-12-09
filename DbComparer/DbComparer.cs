@@ -204,10 +204,11 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 return null;
 
             DataRow[] results = dt.Select(whereClause);
+            IList<String> allColumns = GetColumnNames(dt);
             if (results.Count() < 1)
             {
                 Results.AddOneSideOnly(dt.TableName, source == SourceDb.Left ? ResultTypes.LeftOnly : ResultTypes.RightOnly, whereClause,
-                           CreateMessage(tblSettings.DisplayColumns, sourceRow));
+                           CreateMessage(allColumns, sourceRow));
                 return null;
             }
             else if (results.Count() == 1)
@@ -301,6 +302,22 @@ namespace Bentley.OPEF.Utilities.DbCompare
             }
 
             return msg.TrimEnd( new char[] {',',' '});
+        }
+
+        private IList<String> GetColumnNames(DataTable dt)
+        {
+            IList<String> colNames = new List<String>();
+            if (dt == null)
+                return colNames;
+
+            DataColumnCollection dcc = dt.Columns;
+            foreach (DataColumn dc in dcc)
+            {
+                colNames.Add(dc.ColumnName);
+            }
+
+            return colNames;
+
         }
 
 

@@ -1,50 +1,163 @@
 {
   "globalSettings": {
-    "treatNullAsEmptyString": true,
     "ignoreColumns": [ "CreateInfo", "UpdateInfo" ],
+    "treatNullAsEmptyString": true,
     "ignoreCase": false,
-    "trimValues":  false
+    "trimValues": false
   },
 
   "tableSettings": [
     {
+      "tableName": "refAssemblyCatItems",
+      "selectColumns": [ "Name", "AsbyID" ]
+    },
+    {
+      "tableName": "refAssemblyDesc",
+      "selectColumns": [ "ID" ]
+    },
+    {
+      "tableName": "refAssemblyDetail",
+      "selectColumns": [ "ID","Ordinal" ]
+    },
+    {
+      "tableName": "refAssemblyGeometry",
+      "selectColumns": [ "Signature" ]
+    },
+    {
       "tableName": "refDensity",
-      "processTable": true,
-      "selectColumns": [ "Category", "Material", "Type" ],
-      "displayColumns": [ "DensityID", "Category", "Material", "Type", "Minimal", "Typical", "WeightUOM", "UpdateInfo" ]
+      "selectColumns": [ "Category", "Material", "Type" ]
+    },
+    {
+      "tableName": "refDocRefRegistry",
+      "selectColumns": [ "DocumentID" ]
+    },
+    {
+      "tableName": "refGauges",
+      "selectColumns": [ "Material", "Spec", "Gauge" ]
+    },
+    {
+      "tableName": "refLookupList",
+      "selectColumns": [ "ListID", "ValueID", "Category", "ListGroup", "ListName", "Ordinal" ]
     },
     {
       "tableName": "refMaterial",
-      "processTable": true,
-      "selectColumns": [ "Category", "MaterialGroup", "Ordinal" ],
-      "displayColumns": [ "MaterialID", "Category", "MaterialGroup", "Material", "Ordinal", "UpdateInfo" ]
+      "selectColumns": [ "Category", "MaterialGroup", "Ordinal" ]
+    },
+    {
+      "tableName": "refNomSizeIndex",
+      "selectColumns": [ "Category", "Value", "UOM" ]
+    },
+    {
+      "tableName": "refNominalSize",
+      "selectColumns": [ "KeyND" ]
+    },
+    {
+      "tableName": "refObjParamDef",
+      "selectColumns": [ "ObjName", "Name" ]
+    },
+    {
+      "tableName": "refPipeScheduleMap",
+      "selectColumns": [ "Category", "Schedule", "PipeND_IN" ]
+    },
+    {
+      "tableName": "refPipeSchedules",
+      "selectColumns": [ "Standard", "Schedule", "NomSize" ]
+    },
+    {
+      "tableName": "refProfileDescript",
+      "selectColumns": [ "ItemID" ]
+    },
+    {
+      "tableName": "refProfileProperty",
+      "selectColumns": [ "Signature" ]
     },
     {
       "tableName": "refProjectParameters",
-      "processTable": true,
-      "ignoreCase": true,
-      "trimValues": true,
-      "selectColumns": [ "Category", "Group", "Name" ],
-      "displayColumns": [ "ParameterID", "Category", "Group", "Name", "Value", "UOM", "UpdateInfo" ]
+      "selectColumns": [ "Category", "Group", "Name" ]
     },
     {
-      "tableName": "sysExpression",
-      "processTable": false,
-      "treatNullAsEmptyString": false,
-      "selectColumns": [ "Context", "Category", "ClassName", "ExpressName" ],
-      "displayColumns": [ "ExpressID", "Context", "Category", "ClassName", "ExpressName", "UpdateInfo" ]
+      "tableName": "refSequences",
+      "selectColumns": [ "Sequence" ]
+    },
+    {
+      "tableName": "refSpringRate",
+      "selectColumns": [ "DocumentID", "Type", "SpringSize", "SpringRate" ]
     },
     {
       "tableName": "refSuppDescript",
-      "processTable":  false,
-      "selectColumns": [ "ItemID" ],
-      "displayColumns": [ "ItemID", "Family", "SubFamily", "Manufact", "Type", "BuildMethod", "UpdateInfo" ]
+      "processTable": true,
+      "selectColumns": [ "ItemID" ]
     },
     {
       "tableName": "refSuppGeometry",
+      "processTable": true,
+      "selectColumns": [ "Signature" ]
+    },
+    {
+      "tableName": "refTemplates",
+      "selectColumns": [ "TemplateName" ]
+    },
+    {
+      "tableName": "refTypicalParam",
+      "selectColumns": [ "Category", "TupleType", "TupleName" ]
+    },
+    {
+      "tableName": "refUsageGroups",
+      "selectColumns": [ "Context", "ObjName", "PartName", "Ordinal" ]
+    },
+    {
+      "tableName": "refValueMap",
+      "processTable":  false,
+      "selectColumns": [ "" ]
+    },
+    {
+      "tableName": "refViews",
+      "selectColumns": [ "Context", "ViewName" ]
+    },
+    {
+      "tableName": "sysClass",
+      "selectColumns": [ "ClassName" ]
+    },
+    {
+      "tableName": "sysClassDependency",
+      "selectColumns": [ "ClassID" ]
+    },
+    {
+      "tableName": "sysExpression",
+      "selectColumns": [ "Context", "Category", "ClassName", "ExpressName" ]
+    },
+    {
+      "tableName": "sysPrecision",
+      "selectColumns": [ "UOMType" ]
+    },
+    {
+      "tableName": "sysProperty",
+      "selectColumns": [ "ClassID", "PropertyName" ]
+    },
+    {
+      "tableName": "sysSymbols",
+      "selectColumns": [ "SymbolID" ]
+    },
+    {
+      "tableName": "sysValueSrc",
+      "selectColumns": [ "SourceType", "SourceName", "ControlType" ]
+    },
+    {
+      "tableName": "sysVisuals",
+      "selectColumns": [ "ClassName", "ItemName" ]
+    },
+    {
+      "tableName": "sysWorkBreakdownStructure",
       "processTable": false,
-      "selectColumns": [ "Signature" ],
-      "displayColumns": [ "Signature", "NomSize", "UpdateInfo" ]
+      "selectColumns": [ "Key", "Parent" ]
+    },
+    {
+      "tableName": "sysScript",
+      "selectColumns": [ "Name" ]
+    },
+    {
+      "tableName": "sysScriptFunc",
+      "selectColumns": [ "ScriptName", "FuncName" ]
     }
 
 

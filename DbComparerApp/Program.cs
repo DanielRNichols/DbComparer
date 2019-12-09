@@ -14,6 +14,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
         static void Main(string[] args)
         {
             String dbName1 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
+            //String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric - Copy.db";
             String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OP_CE_Metric\Standards\OpenPlant\ApplicationDb\OPSEMMetricPSA.db";
 
             IDatabase db1 = Connect(dbName1, Database.DatabaseType.SQLite);
@@ -32,6 +33,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             IList<String> skippedTables = results.GetTablesSkipped();
             IList<String> tablesWithNoDifferences = results.GetTablesWithNoDifferences();
             IList<String> tablesWithDifferences = results.GetTablesWithDifferences();
+            IList<String> tablesWithRowDifferences = results.GetTablesWithRowDifferences();
             IList<String> tablesWithLeftOnly = results.GetTablesWithLeftOnly();
             IList<String> tablesWithRightOnly = results.GetTablesWithRightOnly();
             IList<String> tablesWithErrors = results.GetTablesWithErrors();

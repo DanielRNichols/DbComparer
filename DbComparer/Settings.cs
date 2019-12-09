@@ -32,8 +32,6 @@ namespace Bentley.OPEF.Utilities.DbCompare
         public bool? TrimValues { get; set; }
         public IList<string> IgnoreColumns { get; set; }
         public IList<string> SelectColumns { get; set; }
-        public IList<string> DisplayColumns { get; set; }
-
     }
 
     public class SettingsUtilities
