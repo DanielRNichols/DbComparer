@@ -218,7 +218,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 else
                     whereClause = $"{whereClause} OR {EntryTypeColName}='{entryType.ToString()}'";
             }
-            DataRow[] rows = dt.Select(whereClause);
+            DataRow[] rows = dt.Select(whereClause, $"{TableNameColName} ASC");
             foreach (DataRow row in rows)
             {
                 string tblName = row[TableNameColName].ToString();

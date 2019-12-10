@@ -119,6 +119,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             html.Append(RowDifferencesToHTML(ts));
             html.Append(OneSideOnlyToHTML(LeftOnly, "Left Side Only"));
             html.Append(OneSideOnlyToHTML(RightOnly, "Right Side Only"));
+            html.Append("<hr/>");
 
             return html.ToString();
         }
@@ -130,7 +131,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             if (RowDifferences.Count > 0)
             {
                 html.Append("<div class=differences>");
-                html.Append($"<span class='tableLabel'>Differences:</span><br />");
+                html.Append($"<span class='tableLabel'>Differences ({RowDifferences.Count}):</span><br/>");
 
                 html.Append($"<table class='differencesTable'>");
                 foreach (RowDifference rowDiff in RowDifferences)
@@ -153,7 +154,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             if (side.Rows.Count > 0)
             {
                 html.Append("<div class=oneSideOnly>");
-                html.Append($"<span class='tableLabel'>{label}:</span><br />");
+                html.Append($"<span class='tableLabel'>{label} ({side.Rows.Count}):</span><br/>");
 
                 html.Append($"<table class='oneSideOnlyTable'>");
                 bool firstRow = true;

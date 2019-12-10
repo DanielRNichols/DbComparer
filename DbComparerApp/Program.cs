@@ -13,6 +13,9 @@ namespace Bentley.OPEF.Utilities.DbCompare
     {
         static void Main(string[] args)
         {
+            string htmlTemplate = @"D:\CONNECT\DbCompare\DbComparerApp\template.html";
+            string htmlOutput = @"x:\tmp\test.html";
+
             String dbName1 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
             //String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric - Copy.db";
             //String dbName2 = @"D:\CONNECT\WIP\CurrDev\OPSE\out\Winx64\Product\PowerOPSE\Configuration\WorkSpaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
@@ -52,9 +55,6 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
             }
             string html = sb.ToString();
-
-            string htmlTemplate = @"D:\CONNECT\DbCompare\DbComparerApp\template.html";
-            string htmlOutput = @"x:\tmp\test.html";
 
             HtmlHelper.ToHTMLFile(htmlTemplate, htmlOutput, html);
 

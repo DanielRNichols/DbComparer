@@ -27,7 +27,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             HtmlDocument doc = new HtmlDocument();
             doc.Load(htmlTemplate);
 
-            HtmlNode dbCompareResultsNode = doc.GetElementbyId("dbcompareresults");
+            HtmlNode dbCompareResultsNode = doc.GetElementbyId("resultsView");
             if (dbCompareResultsNode == null)
             {
                 return ToHTMLStatus.UnableToLocateNode;

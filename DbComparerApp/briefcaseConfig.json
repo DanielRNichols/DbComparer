@@ -76,6 +76,7 @@
     },
     {
       "tableName": "refProjectParameters",
+      "processTable": true,
       "selectColumns": [ "Category", "Group", "Name" ]
     },
     {
@@ -126,6 +127,7 @@
     },
     {
       "tableName": "sysExpression",
+      "processTable": true,
       "selectColumns": [ "Context", "Category", "ClassName", "ExpressName" ]
     },
     {
