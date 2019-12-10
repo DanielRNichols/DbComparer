@@ -34,6 +34,13 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
             foreach (TableSettings ts in Settings.TableSettings)
             {
+                // override null tableSettings values with values from global settings
+                ts.ProcessTable = ts.ProcessTable ?? Settings.GlobalSettings.ProcessTable;
+                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString ?? Settings.GlobalSettings.TreatNullAsEmptyString;
+                ts.IgnoreColumns = ts.IgnoreColumns ?? Settings.GlobalSettings.IgnoreColumns;
+                ts.IgnoreCase = ts.IgnoreCase ?? Settings.GlobalSettings.IgnoreCase;
+                ts.TrimValues = ts.TrimValues ?? Settings.GlobalSettings.TrimValues;
+
                 if (!ts.ProcessTable.GetValueOrDefault(true))
                 { 
                     Results.AddSkippedTable(ts.TableName, $"Skipped table {ts.TableName}");
@@ -41,12 +48,6 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 }
 
                 Results.AddProcessingTable(ts.TableName, $"Processing table {ts.TableName}");
-
-                // override null tableSettings values with values from global settings
-                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString ?? Settings.GlobalSettings.TreatNullAsEmptyString;
-                ts.IgnoreColumns = ts.IgnoreColumns ?? Settings.GlobalSettings.IgnoreColumns;
-                ts.IgnoreCase = ts.IgnoreCase ?? Settings.GlobalSettings.IgnoreCase;
-                ts.TrimValues = ts.TrimValues ?? Settings.GlobalSettings.TrimValues;
 
                 CompareTable(db1, db2, ts);
             }

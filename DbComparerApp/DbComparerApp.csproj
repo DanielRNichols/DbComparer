@@ -85,6 +85,9 @@
       <Name>DbComparer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="template.html" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y $(ProjectDir)..\Assemblies\SQLite.Interop.dll $(ProjectDir)$(OutDir)</PostBuildEvent>

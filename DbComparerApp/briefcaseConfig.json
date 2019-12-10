@@ -3,7 +3,9 @@
     "ignoreColumns": [ "CreateInfo", "UpdateInfo" ],
     "treatNullAsEmptyString": true,
     "ignoreCase": false,
-    "trimValues": false
+    "trimValues": false,
+    "processTable": true
+
   },
 
   "tableSettings": [
@@ -41,6 +43,7 @@
     },
     {
       "tableName": "refMaterial",
+      "processTable": true,
       "selectColumns": [ "Category", "MaterialGroup", "Ordinal" ]
     },
     {
@@ -85,12 +88,10 @@
     },
     {
       "tableName": "refSuppDescript",
-      "processTable": true,
       "selectColumns": [ "ItemID" ]
     },
     {
       "tableName": "refSuppGeometry",
-      "processTable": true,
       "selectColumns": [ "Signature" ]
     },
     {
@@ -116,6 +117,7 @@
     },
     {
       "tableName": "sysClass",
+      "ignoreColumns": [ "DisplayLabel", "Description", "CreateInfo", "UpdateInfo" ],
       "selectColumns": [ "ClassName" ]
     },
     {
@@ -132,6 +134,7 @@
     },
     {
       "tableName": "sysProperty",
+      "ignoreColumns": [ "DisplayLabel", "Description", "CreateInfo", "UpdateInfo" ],
       "selectColumns": [ "ClassID", "PropertyName" ]
     },
     {

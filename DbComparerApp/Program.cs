@@ -47,11 +47,20 @@ namespace Bentley.OPEF.Utilities.DbCompare
             {
                 ResultsView rv = new ResultsView(results, db1, db2, tblName);
 
-                sb.Append(rv.ToHTML());
+                TableSettings ts = SettingsUtilities.FindSettings(settings.TableSettings, tblName);
+                sb.Append(rv.ToHTML(ts));
 
             }
             string html = sb.ToString();
+
+            string htmlTemplate = @"D:\CONNECT\DbCompare\DbComparerApp\template.html";
+            string htmlOutput = @"x:\tmp\test.html";
+
+            HtmlHelper.ToHTMLFile(htmlTemplate, htmlOutput, html);
+
+
         }
+
 
         private static Database.IDatabase Connect(string dbName, Database.DatabaseType dbType)
         {

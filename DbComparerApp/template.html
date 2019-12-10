@@ -1,0 +1,71 @@
+﻿<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DbCompare</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+
+    body {
+      padding: 20px;
+    }
+
+    .tableNameLabel {
+      font-weight: bold;
+    }
+
+    .tableName {
+      color: blue;
+      font-weight: bold;
+      padding-left: 5px;
+    }
+
+    .tableLabel {
+      font-weight: bold;
+    }
+
+    .differences, .oneSideOnly {
+      margin: 10px;
+    }
+
+    .differencesTable, .oneSideOnlyTable {
+      margin-top: 5px;
+      border-collapse: collapse;
+    }
+
+    .differencesTable, .differencesTable th, .differencesTable td,
+    .oneSideOnlyTable, .oneSideOnlyTable th, .oneSideOnlyTable td {
+      border: 1px solid black;
+      padding: 3px;
+      font-family: "Arial Narrow", "Arial", "sans-serif";
+      font-size: 1em;
+  
+    }
+
+    .differencesTable tr.rightRow td {
+      border-bottom: 3px solid black;
+    }
+
+    .differencesTable th, .oneSideOnly th {
+      background-color: steelblue;
+      color: white;
+    }
+
+    .differencesTable .valueDiff {
+      background-color: tan;
+    }
+
+    .differencesTable .ignoreCol {
+      background-color: lightgray;
+    }
+
+  </style>
+</head>
+
+<body>
+    <div id="dbcompareresults"></div>   
+
+</body>
+</html>

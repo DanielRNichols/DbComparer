@@ -18,6 +18,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
     public class GlobalSettings
     {
         public IList<string> IgnoreColumns { get; set; }
+        public bool? ProcessTable { get; set; }
         public bool? TreatNullAsEmptyString { get; set; }
         public bool? IgnoreCase { get; set; }
         public bool? TrimValues { get; set; }

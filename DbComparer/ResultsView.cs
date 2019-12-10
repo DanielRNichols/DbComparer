@@ -4,6 +4,7 @@ using System.Data;
 using Bentley.OPEF.Database;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Threading.Tasks;
 
 namespace Bentley.OPEF.Utilities.DbCompare
@@ -110,62 +111,33 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return dt;
         }
 
-        public string ToHTML()
+        public string ToHTML(TableSettings ts)
         {
             StringBuilder html = new StringBuilder();
 
             html.Append($"<span class='tableNameLabel'>Table Name:</span><span class='tableName'>{TableName}</span><br />");
-            html.Append(RowDifferencesToHTML());
+            html.Append(RowDifferencesToHTML(ts));
             html.Append(OneSideOnlyToHTML(LeftOnly, "Left Side Only"));
             html.Append(OneSideOnlyToHTML(RightOnly, "Right Side Only"));
 
             return html.ToString();
         }
 
-        private string RowDifferencesToHTML()
+        private string RowDifferencesToHTML(TableSettings ts)
         {
             StringBuilder html = new StringBuilder();
 
             if (RowDifferences.Count > 0)
             {
                 html.Append("<div class=differences>");
-                html.Append($"<span class='differencesLabel'>Differences:</span><br />");
+                html.Append($"<span class='tableLabel'>Differences:</span><br />");
 
-                html.Append($"<table class='differencesTable'");
+                html.Append($"<table class='differencesTable'>");
                 foreach (RowDifference rowDiff in RowDifferences)
                 {
-                    html.Append("<tr>");
-                    foreach (DataColumn col in rowDiff.LeftRow.Table.Columns)
-                    {
-                        html.Append($"<th>{col.ColumnName}</th>");
-                    }
-                    html.Append("</tr>");
-
-                    html.Append("<tr>");
-                    foreach (DataColumn col in rowDiff.LeftRow.Table.Columns)
-                    {
-                        if (rowDiff.DiffCols.Contains(col.ColumnName))
-                            html.Append($"<td class=valueDiff>{rowDiff.LeftRow[col].ToString()}</td>");
-                        else
-                            html.Append($"<td>{rowDiff.LeftRow[col].ToString()}</td>");
-                    }
-                    html.Append("</tr>");
-
-                    html.Append("<tr>");
-                    foreach (DataColumn col in rowDiff.RightRow.Table.Columns)
-                    {
-                        if (rowDiff.DiffCols.Contains(col.ColumnName))
-                            html.Append($"<td class=valueDiff>{rowDiff.RightRow[col].ToString()}</td>");
-                        else
-                            html.Append($"<td>{rowDiff.RightRow[col].ToString()}</td>");
-                    }
-                    html.Append("</tr>");
-                    html.Append("<tr>");
-                    foreach (DataColumn col in rowDiff.RightRow.Table.Columns)
-                    {
-                        html.Append($"<td class=rowSpacer></td>");
-                    }
-                    html.Append("</tr>");
+                    html.Append(GetHtmlHeader(rowDiff.LeftRow.Table.Columns));
+                    html.Append(GetHtmlRowDiff(rowDiff.LeftRow, "leftRow", rowDiff.DiffCols, ts.IgnoreColumns));
+                    html.Append(GetHtmlRowDiff(rowDiff.RightRow, "rightRow", rowDiff.DiffCols, ts.IgnoreColumns));
                 }
                 html.Append($"</table>");
                 html.Append("</div>");
@@ -181,29 +153,20 @@ namespace Bentley.OPEF.Utilities.DbCompare
             if (side.Rows.Count > 0)
             {
                 html.Append("<div class=oneSideOnly>");
-                html.Append($"<span class='oneSideOnlyLabel'>{label}:</span><br />");
+                html.Append($"<span class='tableLabel'>{label}:</span><br />");
 
-                html.Append($"<table class='oneSideOnlyTable'");
+                html.Append($"<table class='oneSideOnlyTable'>");
                 bool firstRow = true;
                 foreach (DataRow row in side.Rows)
                 {
                     if(firstRow)
                     {
-                        html.Append("<tr>");
-                        foreach (DataColumn col in side.Columns)
-                        {
-                            html.Append($"<th>{col.ColumnName}</th>");
-                        }
-                        html.Append("</tr>");
+                        html.Append(GetHtmlHeader(side.Columns));
                         firstRow = false;
                     }
 
-                    html.Append("<tr>");
-                    foreach (DataColumn col in side.Columns)
-                    {
-                        html.Append($"<td>{row[col].ToString()}</td>");
-                    }
-                    html.Append("</tr>");
+                    html.Append(GetHtmlRow(row));
+
                 }
                 html.Append($"</table>");
                 html.Append("</div>");
@@ -212,6 +175,76 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return html.ToString();
         }
 
+        private string GetHtmlHeader(DataColumnCollection cols)
+        {
+            StringBuilder html = new StringBuilder();
+
+            html.Append("<tr>");
+            foreach (DataColumn col in cols)
+            {
+                html.Append($"<th>{col.ColumnName}</th>");
+            }
+            html.Append("</tr>");
+
+            return html.ToString();
+        }
+
+        private string GetHtmlRowDiff(DataRow row, string className, IList<String> diffCols, IList<String> ignoreCols)
+        {
+            StringBuilder html = new StringBuilder();
+            html.Append($"<tr class={className}>");
+            foreach (DataColumn col in row.Table.Columns)
+            {
+                html.Append(GetHtmlRowDiffCell(row, col, diffCols, ignoreCols));
+            }
+            html.Append("</tr>");
+
+            return html.ToString();
+        }
+
+        private string GetHtmlRowDiffCell(DataRow row, DataColumn col, IList<String> diffCols, IList<String> ignoreCols)
+        {
+            StringBuilder html = new StringBuilder();
+
+            string htmlVal = GetHtmlValue(row, col);
+            string classStr = diffCols.Contains(col.ColumnName) ? " class=valueDiff" :
+                              ignoreCols.Contains(col.ColumnName) ? " class=ignoreCol" : "";
+            html.Append($"<td{classStr}>{htmlVal}</td>");
+
+            return html.ToString();
+        }
+
+        private string GetHtmlRow(DataRow row)
+        {
+            StringBuilder html = new StringBuilder();
+
+            html.Append("<tr>");
+            foreach (DataColumn col in row.Table.Columns)
+            {
+                string htmlVal = GetHtmlValue(row, col);
+                html.Append($"<td>{htmlVal}</td>");
+            }
+            html.Append("</tr>");
+
+            return html.ToString();
+        }
+
+        private string GetHtmlValue(DataRow row, DataColumn col)
+        {
+            string val = String.Empty;
+            try
+            { 
+                if (col.DataType.Equals(typeof(byte[])))
+                    val = "BLOB";
+                else
+                    val = row[col].ToString();
+                return HttpUtility.HtmlEncode(val);
+            }
+            catch
+            {
+                return String.Empty;
+            }
+        }
 
     }
 }
