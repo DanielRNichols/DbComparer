@@ -109,13 +109,15 @@ namespace Bentley.OPEF.Utilities.DbCompare
             ResultsTable.Rows.Add(row);
         }
 
-        public IList<String> ToStringList(DataRow[] dataRows)
+        public IList<String> ToStringList(ResultTypes entryType)
         {
             IList<String> msgs = new List<String>();
 
-            foreach(DataRow row in dataRows)
+            string whereClause = $"{EntryTypeColName}='{entryType.ToString()}'";
+            DataRow[] rows = ResultsTable.Select(whereClause);
+            foreach (DataRow row in rows)
             {
-                msgs.Add(RowToString(row));
+                msgs.Add(RowToString(row, false));
             }
 
             return msgs;
@@ -133,22 +135,22 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return msgs;
         }
 
-        private string RowToString(DataRow row) 
+        private string RowToString(DataRow row, bool includeId=true) 
         {
-            string id = row[IdColName].ToString();
+            string idStr = includeId ? $"{row[IdColName].ToString()}. ": "";
             string tableName = row[TableNameColName].ToString();
             string entryType = row[EntryTypeColName].ToString();
             string whereClause = row[WhereClauseColName].ToString();
             string msg = row[MsgColName].ToString();
 
-            return $"{id}. [{tableName}] [{entryType.ToString()}] [{whereClause}] - {msg}";
+            return $"{idStr}[{tableName}] [{entryType.ToString()}] [{whereClause}] - {msg}";
         }
 
         public DataRow[] GetDifferences(string tableName = null)
         {
             string whereClause = $"{EntryTypeColName}='{ResultTypes.Difference.ToString()}'";
             if(!String.IsNullOrEmpty(tableName))
-                whereClause = whereClause + $" AND {TableNameColName}='{tableName}'";
+                whereClause += $" AND {TableNameColName}='{tableName}'";
 
             return  ResultsTable.Select(whereClause);
 

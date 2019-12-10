@@ -126,12 +126,12 @@ namespace Bentley.OPEF.Utilities.DbCompare
             foreach (DataRow row2 in dt2.Rows)
             {
                 string whereClause = CreateWhereClause(db2, tblSettings.SelectColumns, row2);
-                DataRow row1 = FindMatchingRow(db1, SourceDb.Right, dt1, row2, whereClause, tblSettings);
+                DataRow row1 = FindMatchingRow(db1, SourceDb.Right, dt1, row2, whereClause, tblSettings, false);
                 if(row1 == null)
                     numDifferences++;
             }
             if(numDifferences == 0)
-                Results.AddNoDifferences(dt1.TableName, $"No differnces found in {dt1.TableName}");
+                Results.AddNoDifferences(dt1.TableName, $"No differences found in {dt1.TableName}");
         }
 
         private bool CompareValues(object obj1, object obj2, TableSettings tblSettings)
@@ -198,7 +198,8 @@ namespace Bentley.OPEF.Utilities.DbCompare
         }
 
 
-        private DataRow FindMatchingRow(Database.IDatabase db, SourceDb source, DataTable dt,  DataRow sourceRow, string whereClause, TableSettings tblSettings)
+        private DataRow FindMatchingRow(Database.IDatabase db, SourceDb source, DataTable dt,  DataRow sourceRow, 
+                                        string whereClause, TableSettings tblSettings, bool reportMultMatches=true)
         {
             if(dt == null || sourceRow == null || String.IsNullOrEmpty(whereClause) || tblSettings == null)
                 return null;
@@ -219,6 +220,9 @@ namespace Bentley.OPEF.Utilities.DbCompare
             {
                 Results.AddMultipleMatches(dt.TableName, whereClause,
                            CreateMessage(tblSettings.SelectColumns, sourceRow));
+
+                //ToDo: How should we handle this case?
+                //return results[0];
                 return null;
             }
 
@@ -269,7 +273,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
                 string safeColName = selCol;
                 string colName = db.IsKeyWord(selCol, out safeColName) ? safeColName : selCol;
-                string clause = (val == null) ? $"{colName} is null" : $"{colName} = '{val.ToString()}'";
+                string clause = ((val is DBNull) || (val == null)) ? $"{colName} is null" : $"{colName} = '{val.ToString()}'";
 
                 if (string.IsNullOrEmpty(where))
                     where = clause;

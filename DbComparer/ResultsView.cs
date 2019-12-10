@@ -110,5 +110,108 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return dt;
         }
 
+        public string ToHTML()
+        {
+            StringBuilder html = new StringBuilder();
+
+            html.Append($"<span class='tableNameLabel'>Table Name:</span><span class='tableName'>{TableName}</span><br />");
+            html.Append(RowDifferencesToHTML());
+            html.Append(OneSideOnlyToHTML(LeftOnly, "Left Side Only"));
+            html.Append(OneSideOnlyToHTML(RightOnly, "Right Side Only"));
+
+            return html.ToString();
+        }
+
+        private string RowDifferencesToHTML()
+        {
+            StringBuilder html = new StringBuilder();
+
+            if (RowDifferences.Count > 0)
+            {
+                html.Append("<div class=differences>");
+                html.Append($"<span class='differencesLabel'>Differences:</span><br />");
+
+                html.Append($"<table class='differencesTable'");
+                foreach (RowDifference rowDiff in RowDifferences)
+                {
+                    html.Append("<tr>");
+                    foreach (DataColumn col in rowDiff.LeftRow.Table.Columns)
+                    {
+                        html.Append($"<th>{col.ColumnName}</th>");
+                    }
+                    html.Append("</tr>");
+
+                    html.Append("<tr>");
+                    foreach (DataColumn col in rowDiff.LeftRow.Table.Columns)
+                    {
+                        if (rowDiff.DiffCols.Contains(col.ColumnName))
+                            html.Append($"<td class=valueDiff>{rowDiff.LeftRow[col].ToString()}</td>");
+                        else
+                            html.Append($"<td>{rowDiff.LeftRow[col].ToString()}</td>");
+                    }
+                    html.Append("</tr>");
+
+                    html.Append("<tr>");
+                    foreach (DataColumn col in rowDiff.RightRow.Table.Columns)
+                    {
+                        if (rowDiff.DiffCols.Contains(col.ColumnName))
+                            html.Append($"<td class=valueDiff>{rowDiff.RightRow[col].ToString()}</td>");
+                        else
+                            html.Append($"<td>{rowDiff.RightRow[col].ToString()}</td>");
+                    }
+                    html.Append("</tr>");
+                    html.Append("<tr>");
+                    foreach (DataColumn col in rowDiff.RightRow.Table.Columns)
+                    {
+                        html.Append($"<td class=rowSpacer></td>");
+                    }
+                    html.Append("</tr>");
+                }
+                html.Append($"</table>");
+                html.Append("</div>");
+            }
+
+            return html.ToString();
+        }
+
+        private string OneSideOnlyToHTML(DataTable side, string label)
+        {
+            StringBuilder html = new StringBuilder();
+
+            if (side.Rows.Count > 0)
+            {
+                html.Append("<div class=oneSideOnly>");
+                html.Append($"<span class='oneSideOnlyLabel'>{label}:</span><br />");
+
+                html.Append($"<table class='oneSideOnlyTable'");
+                bool firstRow = true;
+                foreach (DataRow row in side.Rows)
+                {
+                    if(firstRow)
+                    {
+                        html.Append("<tr>");
+                        foreach (DataColumn col in side.Columns)
+                        {
+                            html.Append($"<th>{col.ColumnName}</th>");
+                        }
+                        html.Append("</tr>");
+                        firstRow = false;
+                    }
+
+                    html.Append("<tr>");
+                    foreach (DataColumn col in side.Columns)
+                    {
+                        html.Append($"<td>{row[col].ToString()}</td>");
+                    }
+                    html.Append("</tr>");
+                }
+                html.Append($"</table>");
+                html.Append("</div>");
+            }
+
+            return html.ToString();
+        }
+
+
     }
 }

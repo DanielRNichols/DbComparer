@@ -1,0 +1,45 @@
+body {
+  padding: 20px;
+}
+
+.tableNameLabel {
+  font-weight: bold;
+}
+
+.tableName {
+  color: blue;
+  font-weight: bold;
+  padding-left: 5px;
+}
+
+.differences, .oneSideOnly {
+  margin: 10px;
+}
+
+.differencesTable, .oneSideOnlyTable {
+  margin-top: 5px;
+  border-collapse: collapse;
+}
+
+.differencesTable, .differencesTable th, .differencesTable td,
+.oneSideOnlyTable, .oneSideOnlyTable th, .oneSideOnlyTable td {
+  border: 1px solid black;
+  padding: 3px;
+  font-family: "Arial Narrow", "Arial", "sans-serif";
+  font-size: 1em;
+  
+}
+
+.differencesTable th, .differencesTable td {
+}
+
+.differencesTable .rowSpacer {
+  background-color: gray;
+  height: 2px;
+  padding: 0;
+  margin: 0;
+}
+
+.valueDiff {
+  background-color: tan;
+}

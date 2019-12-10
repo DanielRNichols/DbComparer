@@ -15,6 +15,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
         {
             String dbName1 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
             //String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric - Copy.db";
+            //String dbName2 = @"D:\CONNECT\WIP\CurrDev\OPSE\out\Winx64\Product\PowerOPSE\Configuration\WorkSpaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
             String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OP_CE_Metric\Standards\OpenPlant\ApplicationDb\OPSEMMetricPSA.db";
 
             IDatabase db1 = Connect(dbName1, Database.DatabaseType.SQLite);
@@ -29,6 +30,8 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
             IList<String> msgs = results.ToStringList();
 
+            IList<String> diffMsgs = results.ToStringList(ResultTypes.Difference);
+
             IList<String> processedTables = results.GetTablesProcessed();
             IList<String> skippedTables = results.GetTablesSkipped();
             IList<String> tablesWithNoDifferences = results.GetTablesWithNoDifferences();
@@ -39,11 +42,15 @@ namespace Bentley.OPEF.Utilities.DbCompare
             IList<String> tablesWithErrors = results.GetTablesWithErrors();
             IList<String> tablesWithMultipleMatches = results.GetTablesWithMultipleMatches();
 
+            StringBuilder sb = new StringBuilder();
             foreach(string tblName in tablesWithDifferences)
             {
                 ResultsView rv = new ResultsView(results, db1, db2, tblName);
 
+                sb.Append(rv.ToHTML());
+
             }
+            string html = sb.ToString();
         }
 
         private static Database.IDatabase Connect(string dbName, Database.DatabaseType dbType)
