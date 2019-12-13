@@ -54,6 +54,37 @@ namespace Bentley.OPEF.Utilities.DbCompare
             }
         }
 
+        public static Settings Initialize(string settingsFile)
+        {
+            Settings settings = null;
+            try
+            { 
+                settings = Deserialize(settingsFile);
+            }
+            catch(Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+                return null;
+            }
+            if(settings == null)
+                return null;
+
+            // Update TableSettings that are not set with defaults from GlobalSettngs
+
+            foreach (TableSettings ts in settings.TableSettings)
+            {
+                // override null tableSettings values with values from global settings
+                ts.ProcessTable = ts.ProcessTable ?? settings.GlobalSettings.ProcessTable;
+                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString ?? settings.GlobalSettings.TreatNullAsEmptyString;
+                ts.IgnoreColumns = ts.IgnoreColumns ?? settings.GlobalSettings.IgnoreColumns;
+                ts.IgnoreCase = ts.IgnoreCase ?? settings.GlobalSettings.IgnoreCase;
+                ts.TrimValues = ts.TrimValues ?? settings.GlobalSettings.TrimValues;
+
+            }
+
+            return settings;
+        }
+
         public static TableSettings FindSettings(IList<TableSettings> tblSettings, string tableName)
         {
             if(tblSettings == null || String.IsNullOrEmpty(tableName))

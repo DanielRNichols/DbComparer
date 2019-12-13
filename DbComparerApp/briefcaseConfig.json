@@ -4,7 +4,7 @@
     "treatNullAsEmptyString": true,
     "ignoreCase": false,
     "trimValues": false,
-    "processTable": true
+    "processTable": false
 
   },
 
@@ -44,6 +44,7 @@
     {
       "tableName": "refMaterial",
       "processTable": true,
+      "ignoreColumns": [ ],
       "selectColumns": [ "Category", "MaterialGroup", "Ordinal" ]
     },
     {
@@ -68,15 +69,18 @@
     },
     {
       "tableName": "refProfileDescript",
+      "processTable": true,
       "selectColumns": [ "ItemID" ]
     },
     {
       "tableName": "refProfileProperty",
+      "processTable": true,
       "selectColumns": [ "Signature" ]
     },
     {
       "tableName": "refProjectParameters",
       "processTable": true,
+      "ignoreColumns": [ "ParameterID", "CreateInfo", "UpdateInfo" ],
       "selectColumns": [ "Category", "Group", "Name" ]
     },
     {
@@ -97,6 +101,7 @@
     },
     {
       "tableName": "refTemplates",
+      "ignoreColumns": [ "TemplateID", "CreateInfo", "UpdateInfo" ],
       "selectColumns": [ "TemplateName" ]
     },
     {
@@ -162,6 +167,7 @@
     },
     {
       "tableName": "sysScriptFunc",
+      "ignoreColumns": [ "Protection", "CreateInfo", "UpdateInfo" ],
       "selectColumns": [ "ScriptName", "FuncName" ]
     }
 

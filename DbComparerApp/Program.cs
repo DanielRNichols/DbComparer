@@ -13,13 +13,22 @@ namespace Bentley.OPEF.Utilities.DbCompare
     {
         static void Main(string[] args)
         {
-            string htmlTemplate = @"D:\CONNECT\DbCompare\DbComparerApp\template.html";
-            string htmlOutput = @"x:\tmp\test.html";
+            string htmlTemplateFileName = @"D:\CONNECT\DbCompare\DbComparerApp\template.html";
 
-            String dbName1 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
-            //String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric - Copy.db";
-            //String dbName2 = @"D:\CONNECT\WIP\CurrDev\OPSE\out\Winx64\Product\PowerOPSE\Configuration\WorkSpaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
-            String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OP_CE_Metric\Standards\OpenPlant\ApplicationDb\OPSEMMetricPSA.db";
+            string title = "OOTB V6 vs Hatch Upgraded to V6";
+            string htmlOutputFileName = @"x:\tmp\OOTBV6-HatchV6.html";
+            String dbName1 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric-OOTB-V6.db";
+            String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric-HatchUpgraded-V6.db";
+
+            //string title = "Hatch V3 vs Hatch V6";
+            //string htmlOutputFileName = @"x:\tmp\HatchV3-HatchV6.html";
+            //String dbName1 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OP_CE_Metric\Standards\OpenPlant\ApplicationDb\OPSEMMetricPSA.db";
+            //String dbName2 = @"C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric-HatchUpgraded-V6.db";
+
+
+            //String dbName1 = @"D:\CONNECT\WIP\CurrDev\OPSE\out\Winx64\Product\PowerOPSE\Configuration\WorkSpaces\WorkSpace\WorkSets\OpenPlantMixedMetric\Standards\OpenPlant\ApplicationDb\OPSEMixedMetric.db";
+
+
 
             IDatabase db1 = Connect(dbName1, Database.DatabaseType.SQLite);
             IDatabase db2 = Connect(dbName2, Database.DatabaseType.SQLite);
@@ -27,9 +36,9 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
             Settings settings = SettingsUtilities.Deserialize(@"D:\CONNECT\DbCompare\DbComparerApp\briefcaseConfig.json");
 
-            DbComparer dbComparer = new DbComparer();
+            DbComparer dbComparer = new DbComparer(db1, db2, settings);
 
-            Results results = dbComparer.CompareDbs(db1, db2, settings);
+            Results results = dbComparer.CompareDbs();
 
             IList<String> msgs = results.ToStringList();
 
@@ -38,26 +47,14 @@ namespace Bentley.OPEF.Utilities.DbCompare
             IList<String> processedTables = results.GetTablesProcessed();
             IList<String> skippedTables = results.GetTablesSkipped();
             IList<String> tablesWithNoDifferences = results.GetTablesWithNoDifferences();
-            IList<String> tablesWithDifferences = results.GetTablesWithDifferences();
             IList<String> tablesWithRowDifferences = results.GetTablesWithRowDifferences();
             IList<String> tablesWithLeftOnly = results.GetTablesWithLeftOnly();
             IList<String> tablesWithRightOnly = results.GetTablesWithRightOnly();
             IList<String> tablesWithErrors = results.GetTablesWithErrors();
             IList<String> tablesWithMultipleMatches = results.GetTablesWithMultipleMatches();
+            IList<String> tablesWithDifferences = results.GetTablesWithDifferences();
 
-            StringBuilder sb = new StringBuilder();
-            foreach(string tblName in tablesWithDifferences)
-            {
-                ResultsView rv = new ResultsView(results, db1, db2, tblName);
-
-                TableSettings ts = SettingsUtilities.FindSettings(settings.TableSettings, tblName);
-                sb.Append(rv.ToHTML(ts));
-
-            }
-            string html = sb.ToString();
-
-            HtmlHelper.ToHTMLFile(htmlTemplate, htmlOutput, html);
-
+            results.ToHTMLFile(title, htmlTemplateFileName, htmlOutputFileName);
 
         }
 

@@ -16,31 +16,27 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
     public class DbComparer
     {
+        private IDatabase Db1 { get; set; }
+        private IDatabase Db2 { get; set; }
         private Settings Settings { get; set; }
         private Results Results {get; set; }
 
-        public DbComparer()
+        public DbComparer(IDatabase db1, IDatabase db2, Settings settings)
         {
+            Db1 = db1;
+            Db2 = db2;
+            Settings = settings;
         }
 
-        public Results CompareDbs(IDatabase db1, IDatabase db2, Settings settings)
+        public Results CompareDbs()
         {
-            Results = new Results();
+            Results = new Results(Db1, Db2, Settings);
 
-            Settings = settings;
-
-            if (db1 == null || db2 == null || Settings == null) 
+            if (Db1 == null || Db2 == null || Settings == null) 
                 return Results;
 
             foreach (TableSettings ts in Settings.TableSettings)
             {
-                // override null tableSettings values with values from global settings
-                ts.ProcessTable = ts.ProcessTable ?? Settings.GlobalSettings.ProcessTable;
-                ts.TreatNullAsEmptyString = ts.TreatNullAsEmptyString ?? Settings.GlobalSettings.TreatNullAsEmptyString;
-                ts.IgnoreColumns = ts.IgnoreColumns ?? Settings.GlobalSettings.IgnoreColumns;
-                ts.IgnoreCase = ts.IgnoreCase ?? Settings.GlobalSettings.IgnoreCase;
-                ts.TrimValues = ts.TrimValues ?? Settings.GlobalSettings.TrimValues;
-
                 if (!ts.ProcessTable.GetValueOrDefault(true))
                 { 
                     Results.AddSkippedTable(ts.TableName, $"Skipped table {ts.TableName}");
@@ -49,7 +45,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
                 Results.AddProcessingTable(ts.TableName, $"Processing table {ts.TableName}");
 
-                CompareTable(db1, db2, ts);
+                CompareTable(Db1, Db2, ts);
             }
 
             return Results;

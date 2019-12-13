@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Bentley.OPEF.Database;
 
 namespace Bentley.OPEF.Utilities.DbCompare
 {
@@ -23,6 +23,9 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
     public class Results
     {
+        private IDatabase Db1 { get; set; }
+        private IDatabase Db2 { get; set; }
+        private Settings Settings { get; set; }
         private DataTable ResultsTable {get; set; }
 
         public const string IdColName = "Id";
@@ -32,8 +35,11 @@ namespace Bentley.OPEF.Utilities.DbCompare
         public const string DifferenceColumnColName = "DifferenceColumn";
         public const string MsgColName = "Msg";
 
-        public Results()
+        public Results(IDatabase db1, IDatabase db2, Settings settings)
         {
+            Db1 = db1;
+            Db2 = db2;
+            Settings = settings;
             Clear();
         }
 
@@ -260,6 +266,43 @@ namespace Bentley.OPEF.Utilities.DbCompare
             }
 
             return whereClauses;
+        }
+
+        public string ToHTML(string title, string htmlTemplateFileName)
+        {
+            HtmlHelper htmlHelper = new HtmlHelper();
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"<div class='header'");
+            sb.Append($"<span class='title'>{title}</span><br/>");
+            sb.Append(htmlHelper.DbInfoToHTML(Db1, "Left"));
+            sb.Append(htmlHelper.DbInfoToHTML(Db2, "Right"));
+            sb.Append($"</div>");
+            sb.Append($"<div class='content'>");
+
+            IList<String> tablesWithDifferences = GetTablesWithDifferences();
+            foreach (string tblName in tablesWithDifferences)
+            {
+                ResultsView rv = new ResultsView(this, Db1, Db2, tblName);
+
+                TableSettings ts = SettingsUtilities.FindSettings(Settings.TableSettings, tblName);
+                sb.Append(htmlHelper.ResultsViewToHTML(rv, ts));
+
+            }
+            sb.Append($"</div>");
+
+            string html = sb.ToString();
+
+            return htmlHelper.ApplyTemplate(htmlTemplateFileName, html);
+
+        }
+
+        public void ToHTMLFile(string title, string htmlTemplateFileName, string htmlOutputFileName)
+        {
+            string html = ToHTML(title, htmlTemplateFileName);
+
+            HtmlHelper htmlHelper = new HtmlHelper();
+            htmlHelper.ToHTMLFile(htmlOutputFileName, html);
+
         }
     }
 }

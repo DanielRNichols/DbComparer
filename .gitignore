@@ -12,3 +12,9 @@
 /packages/Newtonsoft.Json.12.0.3
 /DbComparerApp/DbComparer - Copy.cs
 /packages/HtmlAgilityPack.1.11.17
+/DbComparer/bin/DbComparerUI
+/DbComparer/obj/DbComparerUI
+/DbComparerApp/bin/x64/DbComparerUI
+/DbComparerApp/obj/x64/DbComparerUI
+/DbComparerUI/bin
+/DbComparerUI/obj

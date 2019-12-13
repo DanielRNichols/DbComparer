@@ -7,14 +7,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbComparerApp", "DbComparer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbComparer", "DbComparer\DbComparer.csproj", "{2F9151F7-4522-48CA-8B9C-4B22D04634C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbComparerUI", "DbComparerUI\DbComparerUI.csproj", "{59F51442-7912-4277-BE9A-5F96E6FB8B3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DbComparerUI|Any CPU = DbComparerUI|Any CPU
+		DbComparerUI|x64 = DbComparerUI|x64
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.DbComparerUI|Any CPU.ActiveCfg = DbComparerUI|Any CPU
+		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.DbComparerUI|Any CPU.Build.0 = DbComparerUI|Any CPU
+		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.DbComparerUI|x64.ActiveCfg = DbComparerUI|x64
+		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.DbComparerUI|x64.Build.0 = DbComparerUI|x64
 		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.Debug|x64.ActiveCfg = Debug|x64
@@ -23,6 +31,10 @@ Global
 		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.Release|x64.ActiveCfg = Release|x64
 		{48410B7B-A77A-449B-A5BC-D2F454CB849F}.Release|x64.Build.0 = Release|x64
+		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.DbComparerUI|Any CPU.ActiveCfg = DbComparerUI|Any CPU
+		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.DbComparerUI|Any CPU.Build.0 = DbComparerUI|Any CPU
+		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.DbComparerUI|x64.ActiveCfg = DbComparerUI|Any CPU
+		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.DbComparerUI|x64.Build.0 = DbComparerUI|Any CPU
 		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -31,6 +43,18 @@ Global
 		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.Release|x64.ActiveCfg = Release|Any CPU
 		{2F9151F7-4522-48CA-8B9C-4B22D04634C7}.Release|x64.Build.0 = Release|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.DbComparerUI|Any CPU.ActiveCfg = DbComparerUI|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.DbComparerUI|Any CPU.Build.0 = DbComparerUI|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.DbComparerUI|x64.ActiveCfg = DbComparerUI|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.DbComparerUI|x64.Build.0 = DbComparerUI|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Debug|x64.Build.0 = Debug|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Release|x64.ActiveCfg = Release|Any CPU
+		{59F51442-7912-4277-BE9A-5F96E6FB8B3F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

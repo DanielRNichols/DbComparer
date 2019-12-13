@@ -10,13 +10,24 @@
 
     body {
       padding: 20px;
+      font-family: "Arial Narrow", "Arial", "sans-serif";
     }
 
-    .tableNameLabel {
+    .title {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .content {
+        margin-top: 30px;
+    }
+
+    .dbNameLabel, .tableNameLabel {
       font-weight: bold;
     }
 
-    .tableName {
+    .dbName, .tableName {
       color: blue;
       font-weight: bold;
       padding-left: 5px;
@@ -39,7 +50,6 @@
     .oneSideOnlyTable, .oneSideOnlyTable th, .oneSideOnlyTable td {
       border: 1px solid black;
       padding: 3px;
-      font-family: "Arial Narrow", "Arial", "sans-serif";
       font-size: 1em;
   
     }
@@ -54,7 +64,7 @@
     }
 
     .differencesTable .valueDiff {
-      background-color: tan;
+      background-color: yellow;
     }
 
     .differencesTable .ignoreCol {
