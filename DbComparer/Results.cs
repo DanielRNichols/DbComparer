@@ -268,7 +268,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return whereClauses;
         }
 
-        public string ToHTML(string title, string htmlTemplateFileName)
+        public string ToHTML(string title, string htmlTemplateFileName, IList<String> tableFilter = null)
         {
             HtmlHelper htmlHelper = new HtmlHelper();
             StringBuilder sb = new StringBuilder();
@@ -279,13 +279,16 @@ namespace Bentley.OPEF.Utilities.DbCompare
             sb.Append($"</div>");
             sb.Append($"<div class='content'>");
 
-            IList<String> tablesWithDifferences = GetTablesWithDifferences();
+            IList<String> tablesWithDifferences = GetTablesProcessed(); // GetTablesWithDifferences();
             foreach (string tblName in tablesWithDifferences)
             {
-                ResultsView rv = new ResultsView(this, Db1, Db2, tblName);
+                if(tableFilter == null || tableFilter.Contains(tblName, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    ResultsView rv = new ResultsView(this, Db1, Db2, tblName);
 
-                TableSettings ts = SettingsUtilities.FindSettings(Settings.TableSettings, tblName);
-                sb.Append(htmlHelper.ResultsViewToHTML(rv, ts));
+                    TableSettings ts = SettingsUtilities.FindSettings(Settings.TableSettings, tblName);
+                    sb.Append(htmlHelper.ResultsViewToHTML(rv, ts));
+                }
 
             }
             sb.Append($"</div>");

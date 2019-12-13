@@ -20,6 +20,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
         private Settings _settings { get; set; }
         private IDatabase _db1 { get; set; }
         private IDatabase _db2 { get; set; }
+        private Results _results { get; set; }
 
         public DbCompareForm()
         {
@@ -29,6 +30,32 @@ namespace Bentley.OPEF.Utilities.DbCompare
         }
 
         private void Initialize()
+        {
+
+        }
+
+        private void CompareButton_Click(object sender, EventArgs e)
+        {
+            Cursor currentCursor = this.Cursor;
+            this.Cursor = Cursors.WaitCursor;
+            try
+            {
+                this.htmlView.DocumentText = "";
+
+                CompareDbs();
+                //this.htmlView.DocumentText = html;
+            }
+            catch
+            {
+            }
+            finally
+            {
+                this.Cursor = currentCursor;
+            }
+
+        }
+
+        public void CompareDbs()
         {
             _htmlTemplateFileName = @"D:\CONNECT\DbCompare\DbComparerApp\template.html";
 
@@ -47,40 +74,35 @@ namespace Bentley.OPEF.Utilities.DbCompare
 
             _settings = SettingsUtilities.Initialize(@"D:\CONNECT\DbCompare\DbComparerApp\briefcaseConfig.json");
 
-            InitializeTableCheckBoxList(_settings);
+            DbComparer dbComparer = new DbComparer(_db1, _db2, _settings);
+            _results = dbComparer.CompareDbs();
+            //string html = results.ToHTML(_title, _htmlTemplateFileName);
+
+            //InitializeTableCheckBoxList(;
+
+            IntializeTableListBox();
 
         }
 
-        private void InitializeTableCheckBoxList(Settings settings)
+        private void IntializeTableListBox()
+        {
+            this.tablesListBox.Items.Clear();
+            foreach (TableSettings ts in _settings.TableSettings)
+            {
+                if(ts.ProcessTable.GetValueOrDefault(false))
+                    this.tablesListBox.Items.Add(ts.TableName);
+            }
+        }
+
+        private void InitializeTableCheckBoxList()
         {
             this.tablesCheckedListBox.Items.Clear();
-            foreach(TableSettings ts in settings.TableSettings)
+            foreach (TableSettings ts in _settings.TableSettings)
             {
                 this.tablesCheckedListBox.Items.Add(ts.TableName, ts.ProcessTable.GetValueOrDefault(false));
             }
         }
 
-        private void CompareButton_Click(object sender, EventArgs e)
-        {
-            Cursor currentCursor = this.Cursor;
-            this.Cursor = Cursors.WaitCursor;
-            try
-            {
-                this.htmlView.DocumentText = "";
-                DbComparer dbComparer = new DbComparer(_db1, _db2, _settings);
-                Results results = dbComparer.CompareDbs();
-                string html = results.ToHTML(_title, _htmlTemplateFileName);
-                this.htmlView.DocumentText = html;
-            }
-            catch
-            {
-            }
-            finally
-            {
-                this.Cursor = currentCursor;
-            }
-
-        }
 
         private static Database.IDatabase Connect(string dbName, Database.DatabaseType dbType)
         {
@@ -93,6 +115,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
             return Database.DatabaseFactory.CreateDatabase(dbType, dbName);
         }
 
+
         private void tablesCheckedListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selected = this.tablesCheckedListBox.SelectedIndex;
@@ -104,6 +127,19 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 if(ts != null)
                     ts.ProcessTable = processTable;
                 //this.Text = this.tablesCheckedListBox.Items[selected].ToString();
+            }
+        }
+
+        private void tablesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selected = this.tablesListBox.SelectedIndex;
+            if(selected >= 0)
+            {
+                string tableName = this.tablesListBox.Items[selected].ToString();
+                string html = _results.ToHTML(_title, _htmlTemplateFileName, new List<String>() {tableName});
+                if(html != null)
+                    this.htmlView.DocumentText = html;
+
             }
         }
     }

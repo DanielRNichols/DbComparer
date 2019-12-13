@@ -31,6 +31,7 @@
             this.htmlView = new System.Windows.Forms.WebBrowser();
             this.CompareButton = new System.Windows.Forms.Button();
             this.tablesCheckedListBox = new System.Windows.Forms.CheckedListBox();
+            this.tablesListBox = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // htmlView
@@ -60,17 +61,30 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.tablesCheckedListBox.CheckOnClick = true;
             this.tablesCheckedListBox.FormattingEnabled = true;
-            this.tablesCheckedListBox.Location = new System.Drawing.Point(12, 12);
+            this.tablesCheckedListBox.Location = new System.Drawing.Point(12, 389);
             this.tablesCheckedListBox.Name = "tablesCheckedListBox";
-            this.tablesCheckedListBox.Size = new System.Drawing.Size(165, 424);
+            this.tablesCheckedListBox.Size = new System.Drawing.Size(165, 49);
             this.tablesCheckedListBox.TabIndex = 2;
+            this.tablesCheckedListBox.Visible = false;
             this.tablesCheckedListBox.SelectedIndexChanged += new System.EventHandler(this.tablesCheckedListBox_SelectedIndexChanged);
+            // 
+            // tablesListBox
+            // 
+            this.tablesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.tablesListBox.FormattingEnabled = true;
+            this.tablesListBox.Location = new System.Drawing.Point(12, 12);
+            this.tablesListBox.Name = "tablesListBox";
+            this.tablesListBox.Size = new System.Drawing.Size(165, 420);
+            this.tablesListBox.TabIndex = 3;
+            this.tablesListBox.SelectedIndexChanged += new System.EventHandler(this.tablesListBox_SelectedIndexChanged);
             // 
             // DbCompareForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.tablesListBox);
             this.Controls.Add(this.tablesCheckedListBox);
             this.Controls.Add(this.CompareButton);
             this.Controls.Add(this.htmlView);
@@ -85,6 +99,7 @@
         private System.Windows.Forms.WebBrowser htmlView;
         private System.Windows.Forms.Button CompareButton;
         private System.Windows.Forms.CheckedListBox tablesCheckedListBox;
+        private System.Windows.Forms.ListBox tablesListBox;
     }
 }
 

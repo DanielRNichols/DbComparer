@@ -54,7 +54,7 @@ namespace Bentley.OPEF.Utilities.DbCompare
                 return null;
             }
 
-            dbCompareResultsNode.InnerHtml = html.ToString();
+            dbCompareResultsNode.InnerHtml = html;
 
             var sb = new StringBuilder();
             using (var writer = new System.IO.StringWriter(sb))
